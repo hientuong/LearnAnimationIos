@@ -57,7 +57,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         //set up the UI
         loginButton.layer.cornerRadius = 8.0
         loginButton.layer.masksToBounds = true
@@ -77,12 +76,23 @@ class ViewController: UIViewController {
         label.textAlignment = .center
         status.addSubview(label)
         
-        moveOffLoginForm()
+        statusPosition = status.center
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setAlphaCloud(0)
+        
+        heading.center.x    -= view.bounds.width
+        username.center.x   -= view.bounds.width
+        password.center.x   -= view.bounds.width
+        
+        cloud1.alpha    = 0.0
+        cloud2.alpha    = 0.0
+        cloud3.alpha    = 0.0
+        cloud4.alpha    = 0.0
+        
+        loginButton.center.y += 30
+        loginButton.alpha = 0.0
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -90,40 +100,170 @@ class ViewController: UIViewController {
         // 1. we can change position & size ( bounds, frame, center )
         // 2. Appearance
         // 3. Transformation
-        
         UIView.animate(withDuration: 0.5) { self.heading.center.x   += self.view.bounds.width }
+        //        UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
+        //            self.username.center.x  += self.view.bounds.width
+        //        }, completion: nil)
         
-        UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
-            self.username.center.x  += self.view.bounds.width
+        UIView.animate(withDuration: 0.5, delay: 0.3, usingSpringWithDamping: 0.6,
+                       initialSpringVelocity: 0.0, options: [],
+                       animations: {
+                        self.username.center.x += self.view.bounds.width
         }, completion: nil)
+        
+        UIView.animate(withDuration: 0.5, delay: 0.4, usingSpringWithDamping: 0.6,
+                       initialSpringVelocity: 0.0, options: [],
+                       animations: {
+                        self.password.center.x  += self.view.bounds.width
+        }, completion: nil)
+        
         // Repeating : .repeat & .autoreverse
         // Animation easing: [.curveLinear, .curveEaseIn, .curveEaseOut, .curveEaseInOut]
-        UIView.animate(withDuration: 0.5, delay: 0.4, options: [.repeat, .autoreverse, .curveEaseIn], animations: {
-            self.password.center.x  += self.view.bounds.width
+        //        UIView.animate(withDuration: 0.5, delay: 0.4, options: [.repeat, .autoreverse, .curveEaseIn], animations: {
+        //            self.password.center.x  += self.view.bounds.width
+        //        }, completion: nil)
+        
+        fadeAnimatedCloud(cloud: cloud1, duration: 0.5, delay: 0.5)
+        fadeAnimatedCloud(cloud: cloud2, duration: 0.5, delay: 0.7)
+        fadeAnimatedCloud(cloud: cloud3, duration: 0.5, delay: 0.9)
+        fadeAnimatedCloud(cloud: cloud4, duration: 0.5, delay: 1.1)
+        animateCloud(cloud: cloud1)
+        animateCloud(cloud: cloud2)
+        animateCloud(cloud: cloud3)
+        animateCloud(cloud: cloud4)
+        
+        
+        UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.0, options: [], animations: {
+            self.loginButton.center.y -= 30
+            self.loginButton.alpha = 1
+        }, completion: nil)
+        
+        //        // create new view
+        //        let newView = UIImageView(image: UIImage(named: "banner"))
+        //        newView.center = animationContainerView.center
+        //
+        //        // add the new view via transition
+        //        UIView.transition(with: animationContainerView,
+        //                          duration: 0.33,
+        //                          options: [.curveEaseOut, .transitionFlipFromBottom],
+        //                          animations: {
+        //                            self.animationContainerView.addSubview(newView)
+        //        },
+        //                          completion: nil)
+        //
+        //        // remove the view via transition
+        //        UIView.transition(with: animationContainerView,
+        //                          duration: 0.5,
+        //                          options: [.curveEaseOut, .transitionFlipFromBottom],
+        //                          animations: {
+        //                            newView.removeFromSuperview()
+        //        },
+        //                          completion: nil)
+        //
+        //        // hide the view via transition
+        //        UIView.transition(with: newView,
+        //                          duration: 0.33,
+        //                          options: [.curveEaseOut, .transitionFlipFromBottom],
+        //                          animations: {
+        //                            newView.isHidden = true
+        //        },
+        //                          completion: nil)
+        //        // replace via transition
+        
+    }
+    
+    private func fadeAnimatedCloud(cloud: UIImageView, duration: TimeInterval, delay: TimeInterval){
+        UIView.animate(withDuration: duration, delay: delay, options: [], animations: {
+            cloud.alpha = 1
         }, completion: nil)
     }
     
-    private func moveOffLoginForm(){
-        heading.center.x    -= view.bounds.width
-        username.center.x   -= view.bounds.width
-        password.center.x   -= view.bounds.width
-    }
-    
-    private func setAlphaCloud(_ alpha: CGFloat){
-        cloud1.alpha = alpha
-        cloud2.alpha = alpha
-        cloud3.alpha = alpha
-        cloud4.alpha = alpha
+    private func animateCloud(cloud: UIImageView){
+        let cloudSpeed = 60.0/view.frame.size.width
+        let duration = (view.frame.size.width - cloud.frame.origin.x) * cloudSpeed
+        
+        UIView.animate(withDuration: TimeInterval(duration), delay: 0.0, options: .curveLinear,
+                       animations: {
+                        cloud.frame.origin.x = self.view.frame.size.width
+        }) { _ in
+            cloud.frame.origin.x = -cloud.frame.size.width
+            self.animateCloud(cloud: cloud)
+        }
     }
     
     // MARK: further methods
-    
     @IBAction func login() {
         view.endEditing(true)
+        
+        UIView.animate(withDuration: 1.5, delay: 0.0, usingSpringWithDamping: 0.2,
+                       initialSpringVelocity: 0.0, options: [],
+                       animations: {
+                        self.loginButton.bounds.size.width += 80.0
+        },
+                       completion: { _ in
+                        self.showMessage(index: 0)
+        })
+        
+        UIView.animate(withDuration: 0.33, delay: 0.0, usingSpringWithDamping: 0.7,
+                       initialSpringVelocity: 0.0, options: [],
+                       animations: {
+                        self.loginButton.center.y += 60.0
+                        self.loginButton.backgroundColor = UIColor(red: 0.85, green: 0.83, blue: 0.45, alpha: 1.0)
+                        self.spinner.center = CGPoint(x: 40.0, y: self.loginButton.frame.size.height/2)
+                        self.spinner.alpha = 1.0
+        },
+                       completion: nil
+        )
+    }
+    
+    func showMessage(index: Int) {
+        label.text = messages[index]
+        
+        UIView.transition(with: status, duration: 0.33, options: [.curveEaseOut, .transitionFlipFromBottom], animations: {
+            self.status.isHidden = false
+        }) { _ in
+            // transitions completion
+            delay(2.0, completion: {
+                if index < self.messages.count - 1 {
+                    self.removeMessage(index: index)
+                } else {
+                    self.resetForm()
+                }
+            })
+            
+        }
+    }
+    
+    func removeMessage(index: Int) {
+        UIView.animate(withDuration: 0.33, delay: 0.0, options: [],
+                       animations: {
+                        self.status.center.x += self.view.frame.size.width
+        },
+                       completion: { _ in
+                        self.status.isHidden = true
+                        self.status.center = self.statusPosition
+                        self.showMessage(index: index + 1)
+        })
+    }
+    
+    func resetForm() {
+        UIView.transition(with: status, duration: 0.33, options: .transitionFlipFromTop, animations: {
+            self.status.center = self.statusPosition
+            self.status.isHidden = true
+        }, completion: nil)
+        
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: [],
+                       animations: {
+                        self.spinner.center = CGPoint(x: -20, y: 16)
+                        self.spinner.alpha = 0.0
+                        self.loginButton.backgroundColor = UIColor(red: 0.63, green: 0.84, blue: 0.35, alpha: 1.0)
+                        self.loginButton.bounds.size.width -= 80.0
+                        self.loginButton.center.y -= 60
+        },
+                       completion: nil)
     }
     
     // MARK: UITextFieldDelegate
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         let nextField = (textField === username) ? password : username
         nextField?.becomeFirstResponder()
