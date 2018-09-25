@@ -43,8 +43,8 @@ class SnowView: UIView {
     emitterCell.greenRange = 0.0
     emitterCell.velocity = 10
     emitterCell.velocityRange = 350
-    emitterCell.emissionRange = CGFloat(M_PI_2)
-    emitterCell.emissionLongitude = CGFloat(-M_PI)
+    emitterCell.emissionRange = CGFloat(Double.pi/2)
+    emitterCell.emissionLongitude = CGFloat(-Double.pi)
     emitterCell.yAcceleration = 70
     emitterCell.xAcceleration = 0
     emitterCell.scale = 0.33
