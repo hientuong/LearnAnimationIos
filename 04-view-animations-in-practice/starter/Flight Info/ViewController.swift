@@ -92,6 +92,9 @@ class ViewController: UIViewController {
             
             cubeTransition(label: flightNr, text: data.flightNr, direction: direction)
             cubeTransition(label: gateNr, text: data.gateNr, direction: direction)
+            
+            let offsetDeparting = CGPoint(x: CGFloat(direction.rawValue * 80), y: 0.0)
+            moveLabel(label: departingFrom, text: data.departingFrom, offset: offsetDeparting)
         } else {
             bgImageView.image = UIImage(named: data.weatherImageName)
             snowView.isHidden = !data.showWeatherEffects
@@ -160,10 +163,55 @@ class ViewController: UIViewController {
         auxLabel.font = label.font
         auxLabel.textAlignment = label.textAlignment
         auxLabel.textColor = label.textColor
-        auxLabel.backgroundColor = UIColor.clear()
+        auxLabel.backgroundColor = UIColor.clear
         
         auxLabel.transform = CGAffineTransform(translationX: offset.x, y: offset.y)
         auxLabel.alpha = 0
         view.addSubview(auxLabel)
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn,
+                       animations: {
+                        label.transform = CGAffineTransform(translationX: offset.x, y: offset.y)
+                        label.alpha = 0.0
+        },
+                       completion: nil)
+        
+        UIView.animate(withDuration: 0.25, delay: 0.1, options: .curveEaseIn, animations: {
+            auxLabel.transform = .identity
+            auxLabel.alpha = 1.0
+        }) { _ in
+            // clean up
+            auxLabel.removeFromSuperview()
+            label.text = text
+            label.alpha = 1.0
+            label.transform = .identity
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
