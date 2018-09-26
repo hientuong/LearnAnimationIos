@@ -76,17 +76,21 @@ class ViewController: UIViewController {
     func changeFlight(to data: FlightData, animated: Bool = false) {
         
         // populate the UI with the next flight's data
-        summary.text = data.summary
-        flightNr.text = data.flightNr
-        gateNr.text = data.gateNr
-        departingFrom.text = data.departingFrom
-        arrivingTo.text = data.arrivingTo
-        flightStatus.text = data.flightStatus
+        //        summary.text = data.summary
+        //        flightNr.text = data.flightNr
+        //        gateNr.text = data.gateNr
+        //        departingFrom.text = data.departingFrom
+        //        arrivingTo.text = data.arrivingTo
+        //        flightStatus.text = data.flightStatus
         //        bgImageView.image = UIImage(named: data.weatherImageName)
         //        snowView.isHidden = !data.showWeatherEffects
         
-        planeDepart()
+        
+        
         if animated {
+            planeDepart()
+            summarySwitch(to: data.summary)
+            
             fade(imageView: bgImageView, toImage: UIImage(named: data.weatherImageName)!, showEffects: data.showWeatherEffects)
             
             let direction: AnimationDirection = data.isTakingOff ? .positive : .negative
@@ -104,6 +108,7 @@ class ViewController: UIViewController {
                       offset: offsetArriving)
             
             cubeTransition(label: flightStatus, text: data.flightStatus, direction: direction)
+            summarySwitch(to: data.summary)
         } else {
             bgImageView.image = UIImage(named: data.weatherImageName)
             snowView.isHidden = !data.showWeatherEffects
@@ -115,6 +120,7 @@ class ViewController: UIViewController {
             arrivingTo.text = data.arrivingTo
             
             flightStatus.text = data.flightStatus
+            summary.text = data.summary
         }
         
         // schedule next flight
@@ -233,6 +239,29 @@ class ViewController: UIViewController {
                                     })
         },
                                 completion: nil)
+    }
+    
+    private func summarySwitch(to: String){
+        //        let originalCenter = summary.center
+        
+        UIView.animateKeyframes(withDuration: 1.0, delay: 0.0, options: .allowUserInteraction,
+                                animations: {
+                                    // animate the text out of screen
+                                    UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.45,
+                                                       animations: {
+                                                        self.summary.center.y -= 100
+                                    })
+                                    // animate the text back in
+                                    UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.45,
+                                                       animations: {
+                                                        self.summary.center.y += 100
+                                    })
+        },
+                                completion: nil)
+        
+        delay(seconds: 0.5) {
+            self.summary.text = to
+        }
     }
 }
 
